@@ -1,234 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>How to Make an Omelet</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>How to Make an Omelet 🍳</title>
   <style>
-    body {
-      font-family: 'Comic Sans MS', cursive, sans-serif;
-      text-align: center;
-      background: #fff8e7;
-      margin: 0;
-      padding: 20px;
+    :root{
+      --bg:#faf7ef; --ink:#2b2b2b; --accent:#ffd34d; --accent-dark:#f2b705; --primary:#2f80ed;
+      --card:#fff; --muted:#6b7280; --pan:#4b5563; --pan-dark:#374151; --egg-white:#fffdfa; --egg-yolk:#ffcc33;
+      --success:#22c55e; --danger:#ef4444; --shadow:0 8px 30px rgba(0,0,0,.08)
     }
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,Helvetica,sans-serif;color:var(--ink);background:linear-gradient(180deg,#fff, var(--bg) 28%)}
+    .wrap{max-width:1000px;margin:0 auto;padding:24px 16px 56px}
+    header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:16px}
+    h1{font-size:clamp(22px,4vw,36px);margin:0;font-weight:800;letter-spacing:.2px}
+    .badge{font-size:12px;color:#111;background:#ffe9a8;border:1px solid #f5d86e;border-radius:999px;padding:4px 10px}
 
-    h1 {
-      color: #ff9800;
-    }
+    .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:20px}
+    @media (max-width:880px){.grid{grid-template-columns:1fr;}}
 
-    .pan {
-      position: relative;
-      width: 200px;
-      height: 120px;
-      background: #333;
-      border-radius: 50% / 40%;
-      margin: 40px auto;
-      overflow: hidden;
-    }
+    .card{background:var(--card);border:1px solid #ece7da;border-radius:20px;box-shadow:var(--shadow)}
+    .card > .head{padding:16px 18px;border-bottom:1px solid #efe9d8;display:flex;align-items:center;gap:10px}
+    .card > .body{padding:18px}
 
-    /* Egg before cracking */
-    .egg {
-      width: 80px;
-      height: 100px;
-      background: #fff;
-      border-radius: 50%;
-      margin: 0 auto;
-      position: absolute;
-      top: -90px;
-      left: 60px;
-      z-index: 3;
-      transition: transform 1s ease, opacity 1s ease;
-    }
+    .steps ol{margin:8px 0 0 18px;padding:0}
+    .steps li{margin:10px 0;color:#374151}
 
-    .egg.cracked {
-      transform: translateY(80px) scale(0.8);
-      opacity: 0;
-    }
+    .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+    .controls input[type="number"]{width:90px;padding:10px 12px;border:1px solid #e5e7eb;border-radius:12px;background:#fff}
+    .btn{appearance:none;border:0;border-radius:14px;padding:10px 14px;font-weight:700;cursor:pointer;box-shadow:var(--shadow);transition:transform .06s ease,opacity .2s}
+    .btn:active{transform:translateY(1px)}
+    .btn.primary{background:var(--primary);color:#fff}
+    .btn.muted{background:#eef2ff;color:#1e3a8a}
+    .btn.danger{background:#fee2e2;color:#7f1d1d}
 
-    /* Yolk */
-    .yolk {
-      width: 0;
-      height: 0;
-      background: yellow;
-      border-radius: 50%;
-      position: absolute;
-      top: 40%;
-      left: 40%;
-      opacity: 0;
-      transition: all 2s ease;
-      z-index: 2;
-    }
+    .timer{font-variant-numeric:tabular-nums;font-size:42px;font-weight:900;letter-spacing:.5px}
+    .tiny{color:var(--muted);font-size:12px}
 
-    .yolk.cooking {
-      width: 60px;
-      height: 60px;
-      opacity: 1;
-    }
+    /* Stage container */
+    .stage{position:relative;aspect-ratio:16/10;border-radius:18px;background:linear-gradient(180deg,#fff, #fff7e0 60%);overflow:hidden;border:1px solid #efe9d8}
+    .stage-inner{position:absolute;inset:0;display:grid;place-items:center}
 
-    /* Omelet */
-    .omelet {
-      width: 120px;
-      height: 60px;
-      background: #fdd835;
-      border-radius: 50%;
-      position: absolute;
-      top: 50%;
-      left: 20%;
-      opacity: 0;
-      transform: scale(0.5);
-      transition: background 5s linear, opacity 1s ease, transform 0.5s ease;
-    }
+    /* Pan drawing */
+    .pan{position:relative;width:min(70%,520px);height:min(70%,520px);display:grid;place-items:center;filter:drop-shadow(0 12px 20px rgba(0,0,0,.15))}
+    .pan .base{width:100%;height:100%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#6b7280 0 40%, var(--pan) 42% 62%, var(--pan-dark) 65% 100%);border:6px solid #2b2f36}
+    .pan .handle{position:absolute;right:-16%;top:42%;width:36%;height:14%;background:linear-gradient(90deg,#2b2f36,#1f2937);border-radius:12px}
+    .pan .rim{position:absolute;inset:8%;border-radius:50%;border:2px dashed rgba(255,255,255,.18)}
 
-    .omelet.cooked {
-      opacity: 1;
-      background: #ffb300;
-      transform: scale(1.1);
-    }
+    /* Egg raw (shell) */
+    .egg-shell{position:relative;width:140px;height:180px;background:#ffe6a7;border:4px solid #e0b15b;border-bottom-left-radius:70% 80%;border-bottom-right-radius:70% 80%;border-top-left-radius:60% 65%;border-top-right-radius:60% 65%;box-shadow:inset 0 -10px 0 rgba(0,0,0,.05)}
+    .egg-shell:before,.egg-shell:after{content:"";position:absolute;left:50%;transform:translateX(-50%);width:80%;height:8px;background:#eab676;border-radius:999px;opacity:.35}
+    .egg-shell:before{top:35%}
+    .egg-shell:after{top:55%}
 
-    /* Bubbles */
-    .bubble {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      width: 10px;
-      height: 10px;
-      background: #fff;
-      border-radius: 50%;
-      animation: bubbleUp 2s infinite;
-      opacity: 0;
-    }
+    /* Egg in pan (cooking) */
+    .egg{position:absolute;width:64%;height:50%;border-radius:50% 50% 44% 44%/60% 60% 40% 40%;background:radial-gradient(ellipse at 45% 45%, var(--egg-white) 0 60%, #fff2c9 70% 100%);box-shadow:0 6px 18px rgba(0,0,0,.18)}
+    .yolk{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);width:28%;height:28%;background:radial-gradient(circle at 35% 35%, #ffe483, var(--egg-yolk) 55%, #e2a100 100%);border-radius:50%;box-shadow:inset -4px -6px 0 rgba(0,0,0,.08)}
 
-    @keyframes bubbleUp {
-      0% { transform: translateY(0) scale(0.5); opacity: 0.6; }
-      50% { transform: translateY(-30px) scale(1); opacity: 0.3; }
-      100% { transform: translateY(-60px) scale(0.3); opacity: 0; }
-    }
+    /* Sizzle bubbles */
+    .bubble{position:absolute;border-radius:50%;background:rgba(255,255,255,.5);animation:sizzle 2.2s infinite ease-in-out}
+    .bubble.b1{width:10px;height:10px;left:30%;top:40%}
+    .bubble.b2{width:14px;height:14px;left:60%;top:35%;animation-delay:.5s}
+    .bubble.b3{width:8px;height:8px;left:45%;top:55%;animation-delay:1s}
+    .bubble.b4{width:12px;height:12px;left:52%;top:30%;animation-delay:1.4s}
+    @keyframes sizzle{0%{transform:translateY(0) scale(.9);opacity:.7}60%{opacity:.9}100%{transform:translateY(-20px) scale(1.1);opacity:0}}
 
-    /* Steam */
-    .steam {
-      position: absolute;
-      bottom: 120px;
-      left: 50%;
-      width: 20px;
-      height: 40px;
-      border-radius: 50%;
-      background: transparent;
-      border: 2px solid rgba(255,255,255,0.7);
-      opacity: 0;
-      animation: steamRise 3s infinite;
-    }
+    /* Finished omelet */
+    .omelet{position:absolute;width:60%;height:40%;background:radial-gradient(ellipse at 50% 30%, #ffd54f 0 55%, #f1b433 56% 100%);border-bottom-left-radius:50% 70%;border-bottom-right-radius:50% 70%;border-top-left-radius:50% 30%;border-top-right-radius:50% 30%;box-shadow:inset 0 -8px 0 rgba(0,0,0,.08), 0 6px 18px rgba(0,0,0,.18)}
+    .speck{position:absolute;width:8px;height:8px;background:#e0a126;border-radius:50%;opacity:.6}
+    .speck.s1{left:40%;top:40%}.speck.s2{left:52%;top:30%}.speck.s3{left:58%;top:48%}.speck.s4{left:46%;top:62%}
+    .steam{position:absolute;left:20%;top:-20%;width:12px;height:60px;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.8),rgba(255,255,255,0));animation:steam 2.4s ease-in-out infinite}
+    .steam.s2{left:auto;right:22%;animation-delay:.7s}
+    @keyframes steam{0%{transform:translateY(12px);opacity:.0}20%{opacity:.6}100%{transform:translateY(-20px);opacity:0}}
 
-    .steam:nth-child(1) { left: 45%; animation-delay: 0s; }
-    .steam:nth-child(2) { left: 50%; animation-delay: 1s; }
-    .steam:nth-child(3) { left: 55%; animation-delay: 2s; }
+    /* Stage logic */
+    .stage .raw{display:grid}
+    .stage .cooking,.stage .done{display:none}
+    .stage.cooking .raw{display:none}
+    .stage.cooking .cooking{display:grid}
+    .stage.done .raw,.stage.done .cooking{display:none}
+    .stage.done .done{display:grid}
 
-    @keyframes steamRise {
-      0% { transform: translateY(0) scale(0.5); opacity: 0.6; }
-      50% { transform: translateY(-20px) scale(0.7); opacity: 0.4; }
-      100% { transform: translateY(-40px) scale(0.9); opacity: 0; }
-    }
-
-    /* Timer */
-    #timer {
-      font-size: 24px;
-      margin: 20px 0;
-      color: #333;
-    }
-
-    button {
-      background: #ff9800;
-      border: none;
-      padding: 10px 20px;
-      color: white;
-      font-size: 18px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #e68900;
-    }
-
-    /* Pan shake */
-    .pan.shake {
-      animation: shake 0.4s ease-in-out 2;
-    }
-
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
+    .footer-note{margin-top:10px;color:var(--muted);font-size:13px}
   </style>
 </head>
 <body>
-  <h1>🍳 How to Make an Omelet</h1>
-  <p>Click start to crack the egg and cook your omelet!</p>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>How to Make an Omelet</h1>
+        <div class="badge">Cartoon cooking · No login needed</div>
+      </div>
+      <div class="timer" id="timer">03:00</div>
+    </header>
 
-  <div class="pan">
-    <div class="egg" id="egg"></div>
-    <div class="yolk" id="yolk"></div>
-    <div class="omelet" id="omelet"></div>
-    <div class="bubble" style="left:40%"></div>
-    <div class="bubble" style="left:60%; animation-delay:0.5s;"></div>
-    <div class="bubble" style="left:50%; animation-delay:1s;"></div>
+    <div class="grid">
+      <!-- Left: Animation card -->
+      <section class="card">
+        <div class="head"><strong>Cooking Visual</strong><span class="tiny">Watch the egg transform as the timer runs</span></div>
+        <div class="body">
+          <div class="stage" id="stage">
+            <div class="stage-inner raw" aria-hidden="false">
+              <div class="egg-shell" aria-label="Raw egg"></div>
+            </div>
+            <div class="stage-inner cooking" aria-hidden="true">
+              <div class="pan">
+                <div class="base"></div>
+                <div class="rim"></div>
+                <div class="handle"></div>
+                <div class="egg"></div>
+                <div class="yolk"></div>
+                <div class="bubble b1"></div>
+                <div class="bubble b2"></div>
+                <div class="bubble b3"></div>
+                <div class="bubble b4"></div>
+              </div>
+            </div>
+            <div class="stage-inner done" aria-hidden="true">
+              <div class="pan">
+                <div class="base"></div>
+                <div class="rim"></div>
+                <div class="handle"></div>
+                <div class="omelet">
+                  <div class="speck s1"></div>
+                  <div class="speck s2"></div>
+                  <div class="speck s3"></div>
+                  <div class="speck s4"></div>
+                  <div class="steam"></div>
+                  <div class="steam s2"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: Controls + Steps card -->
+      <section class="card">
+        <div class="head"><strong>Timer & Steps</strong></div>
+        <div class="body">
+          <div class="controls" style="margin-bottom:12px">
+            <label class="tiny" for="minutes">Minutes</label>
+            <input id="minutes" type="number" min="1" max="10" value="3" />
+            <button class="btn primary" id="startBtn" aria-label="Start cooking timer">Start Cooking</button>
+            <button class="btn muted" id="resetBtn" aria-label="Reset timer">Reset</button>
+            <span class="tiny" id="status">Ready</span>
+          </div>
+
+          <div class="steps">
+            <ol>
+              <li>Crack 2–3 eggs into a bowl. Add a pinch of salt & pepper.</li>
+              <li>Whisk until smooth and slightly frothy (10–15 seconds).</li>
+              <li>Heat a non‑stick pan on medium with a little butter/oil.</li>
+              <li>Pour eggs in. Gently swirl/stir for soft curds.</li>
+              <li>When mostly set, fold and slide onto a plate. Enjoy!</li>
+            </ol>
+          </div>
+          <p class="footer-note">Tip: Typical omelet cooks in ~2–3 minutes on medium heat. Adjust the minutes above if you like it softer or more set.</p>
+        </div>
+      </section>
+    </div>
   </div>
 
-  <!-- Steam elements above the pan -->
-  <div class="steam"></div>
-  <div class="steam"></div>
-  <div class="steam"></div>
-
-  <div id="timer">00:00</div>
-  <button onclick="startCooking()">Start Cooking</button>
-
   <script>
-    let countdown;
-    function startCooking() {
-      let time = 5; // seconds
-      const egg = document.getElementById("egg");
-      const yolk = document.getElementById("yolk");
-      const omelet = document.getElementById("omelet");
-      const pan = document.querySelector(".pan");
-      const steamEls = document.querySelectorAll(".steam");
+    const timerEl = document.getElementById('timer');
+    const minutesInput = document.getElementById('minutes');
+    const startBtn = document.getElementById('startBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const statusEl = document.getElementById('status');
+    const stage = document.getElementById('stage');
 
-      // Reset states
-      clearInterval(countdown);
-      document.getElementById("timer").textContent = "00:00";
-      egg.classList.remove("cracked");
-      yolk.classList.remove("cooking");
-      omelet.classList.remove("cooked");
-      pan.classList.remove("shake");
-      steamEls.forEach(s => s.style.opacity = "0");
+    let totalSeconds = 180; // default 3 minutes
+    let remaining = totalSeconds;
+    let ticking = null;
 
-      // Crack egg
-      setTimeout(() => egg.classList.add("cracked"), 500);
+    function fmt(s){
+      const m = Math.floor(s/60).toString().padStart(2,'0');
+      const sec = (s%60).toString().padStart(2,'0');
+      return `${m}:${sec}`;
+    }
 
-      // Show yolk
-      setTimeout(() => yolk.classList.add("cooking"), 1500);
+    function setStage(name){
+      stage.classList.remove('cooking','done');
+      if(name==='cooking') stage.classList.add('cooking');
+      if(name==='done') stage.classList.add('done');
+    }
 
-      // Turn on steam
-      setTimeout(() => steamEls.forEach(s => s.style.opacity = "1"), 2000);
+    function updateDisplay(){
+      timerEl.textContent = fmt(remaining);
+    }
 
-      // Start timer
-      countdown = setInterval(() => {
-        let minutes = String(Math.floor(time / 60)).padStart(2, '0');
-        let seconds = String(time % 60).padStart(2, '0');
-        document.getElementById("timer").textContent = `${minutes}:${seconds}`;
-        time--;
+    function resetTimer(){
+      clearInterval(ticking); ticking = null;
+      totalSeconds = Math.min(Math.max(parseInt(minutesInput.value||'3',10),1),10) * 60;
+      remaining = totalSeconds;
+      updateDisplay();
+      setStage('');
+      statusEl.textContent = 'Ready';
+      startBtn.disabled = false;
+    }
 
-        if (time < 0) {
-          clearInterval(countdown);
-          omelet.classList.add("cooked");
-          pan.classList.add("shake");
-          // Stop steam after cooking
-          setTimeout(() => steamEls.forEach(s => s.style.opacity = "0"), 2000);
+    function startTimer(){
+      if(ticking) return;
+      // initialize based on input
+      totalSeconds = Math.min(Math.max(parseInt(minutesInput.value||'3',10),1),10) * 60;
+      remaining = totalSeconds;
+      setStage('cooking');
+      statusEl.textContent = 'Cooking…';
+      startBtn.disabled = true;
+      updateDisplay();
+
+      ticking = setInterval(()=>{
+        remaining--;
+        if(remaining <= 0){
+          clearInterval(ticking); ticking = null; remaining = 0; updateDisplay();
+          setStage('done');
+          statusEl.textContent = 'Omelet is ready!';
+          try{ beep(); }catch(e){}
+          alert('Ding! Omelet is ready 🍳');
+          startBtn.disabled = false;
+        } else {
+          // mid-way text cue
+          if(remaining === Math.floor(totalSeconds/2)){
+            statusEl.textContent = 'Halfway there – looking good!';
+          }
+          updateDisplay();
         }
       }, 1000);
     }
+
+    // A tiny WebAudio beep so it works with no assets
+    function beep(){
+      const ctx = new (window.AudioContext||window.webkitAudioContext)();
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type='sine'; o.frequency.value=880; g.gain.value=0.001; // low volume
+      o.start();
+      g.gain.exponentialRampToValueAtTime(0.04, ctx.currentTime+0.02);
+      g.gain.exponentialRampToValueAtTime(0.00001, ctx.currentTime+0.6);
+      o.stop(ctx.currentTime+0.6);
+    }
+
+    startBtn.addEventListener('click', startTimer);
+    resetBtn.addEventListener('click', resetTimer);
+
+    // Initialize
+    (function(){
+      minutesInput.addEventListener('change',()=>{
+        // live reflect time when not ticking
+        if(!ticking){ remaining = Math.min(Math.max(parseInt(minutesInput.value||'3',10),1),10) * 60; updateDisplay(); }
+      });
+      resetTimer();
+    })();
   </script>
 </body>
 </html>
